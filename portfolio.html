@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Professional Image Editor</title>
+    <meta name="description" content="Browse my complete portfolio of professional image editing work including portrait retouching, commercial photography, creative compositing, and color grading projects.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #1a1a1a;
+            --primary-light: #ffffff;
+            --accent-amber: #d4a574;
+            --soft-gray: #f8f8f8;
+            --text-dark: #2d2d2d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--soft-gray);
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .filter-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--accent-amber);
+            background: transparent;
+            color: var(--accent-amber);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent-amber);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 165, 116, 0.3);
+        }
+        
+        .portfolio-item {
+            opacity: 0;
+            transform: scale(0.8) translateY(30px);
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .portfolio-item.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .portfolio-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+        
+        .portfolio-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+        
+        .lightbox img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .lightbox-close:hover {
+            color: var(--accent-amber);
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .lightbox-nav:hover {
+            color: var(--accent-amber);
+        }
+        
+        .lightbox-prev {
+            left: -60px;
+        }
+        
+        .lightbox-next {
+            right: -60px;
+        }
+        
+        .before-after-slider {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .before-after-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+        
+        .before-image,
+        .after-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .after-image {
+            clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%);
+            transition: clip-path 0.3s ease;
+        }
+        
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-amber);
+            cursor: ew-resize;
+            z-index: 10;
+        }
+        
+        .slider-handle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: var(--accent-amber);
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+        
+        .category-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--accent-amber);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .section-padding {
+            padding: 100px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .section-padding {
+                padding: 60px 0;
+            }
+            .lightbox-nav {
+                display: none;
+            }
+            .filter-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-gray-800">Visual Editor</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-amber-600 transition-colors">Home</a>
+                    <a href="portfolio.html" class="text-amber-600 font-semibold">Portfolio</a>
+                    <a href="about.html" class="text-gray-700 hover:text-amber-600 transition-colors">About</a>
+                    <a href="contact.html" class="text-gray-700 hover:text-amber-600 transition-colors">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" class="text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Header Section -->
+    <section class="pt-32 pb-16 bg-white">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">My Portfolio</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                A comprehensive showcase of professional image editing work across various genres and techniques
+            </p>
+        </div>
+    </section>
+    
+    <!-- Filter Section -->
+    <section class="py-8 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="filter-btn active" data-filter="all">All Work</button>
+                <button class="filter-btn" data-filter="portrait">Portrait Retouching</button>
+                <button class="filter-btn" data-filter="commercial">Commercial</button>
+                <button class="filter-btn" data-filter="creative">Creative Compositing</button>
+                <button class="filter-btn" data-filter="color">Color Grading</button>
+                <button class="filter-btn" data-filter="before-after">Before/After</button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Portfolio Grid -->
+    <section class="section-padding bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolioGrid">
+                
+                <!-- Portfolio Item 1 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="creative" 
+                     data-title="Urban Storytelling"
+                     data-description="Street photography with enhanced contrast and mood lighting"
+                     data-techniques="Contrast enhancement, Color grading, Mood creation">
+                    <div class="relative">
+                        <img src="resources/portfolio-1.jpg" alt="Urban Storytelling">
+                        <div class="category-tag">Creative</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Urban Storytelling</h3>
+                        <p class="text-gray-600">Street photography with enhanced contrast and mood</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 2 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="commercial" 
+                     data-title="Event Excellence"
+                     data-description="Professional event photography with perfect lighting and color balance"
+                     data-techniques="Exposure correction, Color balance, Noise reduction">
+                    <div class="relative">
+                        <img src="resources/portfolio-2.jpg" alt="Event Excellence">
+                        <div class="category-tag">Commercial</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Event Excellence</h3>
+                        <p class="text-gray-600">Professional event photography editing</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 3 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="commercial" 
+                     data-title="Architectural Vision"
+                     data-description="Real estate photography with enhanced perspective and lighting"
+                     data-techniques="Perspective correction, HDR processing, Color enhancement">
+                    <div class="relative">
+                        <img src="resources/portfolio-3.jpg" alt="Architectural Vision">
+                        <div class="category-tag">Commercial</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Architectural Vision</h3>
+                        <p class="text-gray-600">Real estate and architectural enhancement</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 4 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="portrait" 
+                     data-title="Wedding Magic"
+                     data-description="Romantic wedding photography with dreamy color grading"
+                     data-techniques="Skin retouching, Color grading, Romantic mood creation">
+                    <div class="relative">
+                        <img src="resources/portfolio-4.jpg" alt="Wedding Magic">
+                        <div class="category-tag">Portrait</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Wedding Magic</h3>
+                        <p class="text-gray-600">Romantic wedding photography editing</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 5 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="creative" 
+                     data-title="Creative Vision"
+                     data-description="Artistic street photography with creative color treatment"
+                     data-techniques="Creative color grading, Artistic filters, Composition enhancement">
+                    <div class="relative">
+                        <img src="resources/portfolio-5.jpg" alt="Creative Vision">
+                        <div class="category-tag">Creative</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Creative Vision</h3>
+                        <p class="text-gray-600">Artistic street photography enhancement</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 6 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="commercial" 
+                     data-title="Automotive Excellence"
+                     data-description="High-end automotive photography with perfect reflections and lighting"
+                     data-techniques="Reflection control, Lighting enhancement, Detail sharpening">
+                    <div class="relative">
+                        <img src="resources/portfolio-6.jpg" alt="Automotive Excellence">
+                        <div class="category-tag">Commercial</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Automotive Excellence</h3>
+                        <p class="text-gray-600">High-end automotive photography editing</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 7 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="portrait" 
+                     data-title="Romantic Portrait"
+                     data-description="Wedding portrait with natural skin retouching and warm tones"
+                     data-techniques="Skin retouching, Warm color grading, Natural enhancement">
+                    <div class="relative">
+                        <img src="resources/portfolio-7.jpg" alt="Romantic Portrait">
+                        <div class="category-tag">Portrait</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Romantic Portrait</h3>
+                        <p class="text-gray-600">Natural wedding portrait enhancement</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 8 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="commercial" 
+                     data-title="Food Styling"
+                     data-description="Professional food photography with perfect color and texture"
+                     data-techniques="Color enhancement, Texture sharpening, Food styling">
+                    <div class="relative">
+                        <img src="resources/portfolio-8.jpg" alt="Food Styling">
+                        <div class="category-tag">Commercial</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Food Styling</h3>
+                        <p class="text-gray-600">Professional food photography editing</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 9 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="commercial" 
+                     data-title="Jewelry Perfection"
+                     data-description="Luxury jewelry photography with enhanced details and reflections"
+                     data-techniques="Reflection control, Detail enhancement, Luxury finish">
+                    <div class="relative">
+                        <img src="resources/portfolio-9.jpg" alt="Jewelry Perfection">
+                        <div class="category-tag">Commercial</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Jewelry Perfection</h3>
+                        <p class="text-gray-600">Luxury jewelry photography editing</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 10 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="commercial" 
+                     data-title="Culinary Art"
+                     data-description="Artistic food photography with creative styling and presentation"
+                     data-techniques="Creative styling, Color grading, Artistic presentation">
+                    <div class="relative">
+                        <img src="resources/portfolio-10.jpg" alt="Culinary Art">
+                        <div class="category-tag">Commercial</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Culinary Art</h3>
+                        <p class="text-gray-600">Artistic food photography and styling</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 11 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="portrait" 
+                     data-title="Elegant Wedding"
+                     data-description="Classic wedding photography with timeless editing style"
+                     data-techniques="Classic editing, Timeless color grading, Elegant retouching">
+                    <div class="relative">
+                        <img src="resources/portfolio-11.jpg" alt="Elegant Wedding">
+                        <div class="category-tag">Portrait</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Elegant Wedding</h3>
+                        <p class="text-gray-600">Classic wedding photography editing</p>
+                    </div>
+                </div>
+                
+                <!-- Portfolio Item 12 -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="portrait" 
+                     data-title="Bridal Beauty"
+                     data-description="Bridal portrait with natural enhancement and romantic mood"
+                     data-techniques="Natural retouching, Romantic color grading, Bridal enhancement">
+                    <div class="relative">
+                        <img src="resources/portfolio-12.jpg" alt="Bridal Beauty">
+                        <div class="category-tag">Portrait</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Bridal Beauty</h3>
+                        <p class="text-gray-600">Natural bridal portrait enhancement</p>
+                    </div>
+                </div>
+                
+                <!-- Before/After Items -->
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="before-after portrait" 
+                     data-title="Portrait Transformation"
+                     data-description="Professional portrait retouching with skin smoothing and color correction"
+                     data-techniques="Skin retouching, Color correction, Natural enhancement">
+                    <div class="before-after-container">
+                        <img src="resources/before-1.jpg" alt="Before" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">Before/After</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Portrait Transformation</h3>
+                        <p class="text-gray-600">Professional portrait retouching demonstration</p>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="before-after color" 
+                     data-title="Landscape Enhancement"
+                     data-description="Dramatic landscape color grading and atmospheric enhancement"
+                     data-techniques="Color grading, Atmospheric enhancement, Contrast adjustment">
+                    <div class="before-after-container">
+                        <img src="resources/before-2.jpg" alt="Before" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">Before/After</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Landscape Enhancement</h3>
+                        <p class="text-gray-600">Dramatic landscape editing transformation</p>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item bg-white rounded-lg overflow-hidden shadow-lg" 
+                     data-category="before-after commercial" 
+                     data-title="Product Perfection"
+                     data-description="Commercial product photography with flawless retouching"
+                     data-techniques="Product retouching, Reflection control, Commercial finish">
+                    <div class="before-after-container">
+                        <img src="resources/before-3.jpg" alt="Before" class="w-full h-64 object-cover">
+                        <div class="absolute top-4 left-4 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm">Before/After</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">Product Perfection</h3>
+                        <p class="text-gray-600">Commercial product editing transformation</p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+    
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-close" id="lightboxClose">&times;</div>
+            <div class="lightbox-nav lightbox-prev" id="lightboxPrev">&#8249;</div>
+            <div class="lightbox-nav lightbox-next" id="lightboxNext">&#8250;</div>
+            <img id="lightboxImage" src="" alt="">
+            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-6">
+                <h3 id="lightboxTitle" class="text-2xl font-bold mb-2"></h3>
+                <p id="lightboxDescription" class="mb-2"></p>
+                <p id="lightboxTechniques" class="text-sm opacity-75"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-gray-400">&copy; 2024 Professional Image Editor. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Portfolio filtering functionality
+        class PortfolioGallery {
+            constructor() {
+                this.currentFilter = 'all';
+                this.currentLightboxIndex = 0;
+                this.filteredItems = [];
+                this.init();
+            }
+            
+            init() {
+                this.setupFiltering();
+                this.setupLightbox();
+                this.setupMobileMenu();
+                this.showInitialItems();
+            }
+            
+            setupFiltering() {
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                const portfolioItems = document.querySelectorAll('.portfolio-item');
+                
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        // Update active button
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        // Filter items
+                        const filter = btn.dataset.filter;
+                        this.currentFilter = filter;
+                        this.filterItems(filter);
+                    });
+                });
+            }
+            
+            filterItems(filter) {
+                const portfolioItems = document.querySelectorAll('.portfolio-item');
+                
+                portfolioItems.forEach((item, index) => {
+                    const categories = item.dataset.category.split(' ');
+                    const shouldShow = filter === 'all' || categories.includes(filter);
+                    
+                    if (shouldShow) {
+                        setTimeout(() => {
+                            item.classList.add('visible');
+                        }, index * 100);
+                    } else {
+                        item.classList.remove('visible');
+                    }
+                });
+                
+                // Update filtered items array for lightbox
+                this.updateFilteredItems();
+            }
+            
+            showInitialItems() {
+                const portfolioItems = document.querySelectorAll('.portfolio-item');
+                portfolioItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, index * 100);
+                });
+                this.updateFilteredItems();
+            }
+            
+            updateFilteredItems() {
+                this.filteredItems = Array.from(document.querySelectorAll('.portfolio-item.visible'));
+            }
+            
+            setupLightbox() {
+                const lightbox = document.getElementById('lightbox');
+                const lightboxImage = document.getElementById('lightboxImage');
+                const lightboxTitle = document.getElementById('lightboxTitle');
+                const lightboxDescription = document.getElementById('lightboxDescription');
+                const lightboxTechniques = document.getElementById('lightboxTechniques');
+                const lightboxClose = document.getElementById('lightboxClose');
+                const lightboxPrev = document.getElementById('lightboxPrev');
+                const lightboxNext = document.getElementById('lightboxNext');
+                
+                // Open lightbox
+                document.querySelectorAll('.portfolio-item').forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        const img = item.querySelector('img');
+                        const title = item.dataset.title;
+                        const description = item.dataset.description;
+                        const techniques = item.dataset.techniques;
+                        
+                        lightboxImage.src = img.src;
+                        lightboxTitle.textContent = title;
+                        lightboxDescription.textContent = description;
+                        lightboxTechniques.textContent = `Techniques: ${techniques}`;
+                        
+                        this.currentLightboxIndex = this.filteredItems.indexOf(item);
+                        
+                        lightbox.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    });
+                });
+                
+                // Close lightbox
+                lightboxClose.addEventListener('click', () => {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) {
+                        lightbox.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                // Navigation
+                lightboxPrev.addEventListener('click', () => {
+                    this.navigateLightbox(-1);
+                });
+                
+                lightboxNext.addEventListener('click', () => {
+                    this.navigateLightbox(1);
+                });
+                
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (lightbox.classList.contains('active')) {
+                        if (e.key === 'Escape') {
+                            lightbox.classList.remove('active');
+                            document.body.style.overflow = '';
+                        } else if (e.key === 'ArrowLeft') {
+                            this.navigateLightbox(-1);
+                        } else if (e.key === 'ArrowRight') {
+                            this.navigateLightbox(1);
+                        }
+                    }
+                });
+            }
+            
+            navigateLightbox(direction) {
+                const lightbox = document.getElementById('lightbox');
+                const lightboxImage = document.getElementById('lightboxImage');
+                const lightboxTitle = document.getElementById('lightboxTitle');
+                const lightboxDescription = document.getElementById('lightboxDescription');
+                const lightboxTechniques = document.getElementById('lightboxTechniques');
+                
+                this.currentLightboxIndex += direction;
+                
+                if (this.currentLightboxIndex < 0) {
+                    this.currentLightboxIndex = this.filteredItems.length - 1;
+                } else if (this.currentLightboxIndex >= this.filteredItems.length) {
+                    this.currentLightboxIndex = 0;
+                }
+                
+                const item = this.filteredItems[this.currentLightboxIndex];
+                const img = item.querySelector('img');
+                
+                lightboxImage.src = img.src;
+                lightboxTitle.textContent = item.dataset.title;
+                lightboxDescription.textContent = item.dataset.description;
+                lightboxTechniques.textContent = `Techniques: ${item.dataset.techniques}`;
+            }
+            
+            setupMobileMenu() {
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const nav = document.querySelector('nav');
+                
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.addEventListener('click', () => {
+                        let mobileMenu = document.getElementById('mobileMenu');
+                        if (!mobileMenu) {
+                            mobileMenu = document.createElement('div');
+                            mobileMenu.id = 'mobileMenu';
+                            mobileMenu.className = 'md:hidden bg-white border-t';
+                            mobileMenu.innerHTML = `
+                                <div class="px-6 py-4 space-y-4">
+                                    <a href="index.html" class="block text-gray-700 hover:text-amber-600 transition-colors">Home</a>
+                                    <a href="portfolio.html" class="block text-amber-600 font-semibold">Portfolio</a>
+                                    <a href="about.html" class="block text-gray-700 hover:text-amber-600 transition-colors">About</a>
+                                    <a href="contact.html" class="block text-gray-700 hover:text-amber-600 transition-colors">Contact</a>
+                                </div>
+                            `;
+                            nav.appendChild(mobileMenu);
+                        }
+                        
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+            }
+        }
+        
+        // Initialize portfolio gallery
+        document.addEventListener('DOMContentLoaded', () => {
+            new PortfolioGallery();
+        });
+    </script>
+</body>
+</html>

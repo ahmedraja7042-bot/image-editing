@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Professional Image Editor</title>
+    <meta name="description" content="Learn about my journey as a professional image editor, my expertise in visual storytelling, and my commitment to transforming raw images into visual masterpieces.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Core Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-dark: #1a1a1a;
+            --primary-light: #ffffff;
+            --accent-amber: #d4a574;
+            --soft-gray: #f8f8f8;
+            --text-dark: #2d2d2d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--soft-gray);
+        }
+        
+        .nav-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(212, 165, 116, 0.4)), 
+                        url('resources/hero-bg.jpg') center/cover;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        
+        .profile-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .timeline-item {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent-amber);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-amber);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            border: 4px solid white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .skill-progress {
+            width: 0%;
+            transition: width 2s ease-in-out;
+        }
+        
+        .software-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .software-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-padding {
+            padding: 100px 0;
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                min-height: 50vh;
+            }
+            .profile-image {
+                width: 200px;
+                height: 200px;
+            }
+            .timeline-line {
+                left: 2rem;
+            }
+            .timeline-dot {
+                left: 2rem;
+            }
+            .section-padding {
+                padding: 60px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-xl font-bold text-gray-800">Visual Editor</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-amber-600 transition-colors">Home</a>
+                    <a href="portfolio.html" class="text-gray-700 hover:text-amber-600 transition-colors">Portfolio</a>
+                    <a href="about.html" class="text-amber-600 font-semibold">About</a>
+                    <a href="contact.html" class="text-gray-700 hover:text-amber-600 transition-colors">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" class="text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">About Me</h1>
+            <p class="text-xl md:text-2xl opacity-90">
+                Passionate about transforming ordinary images into extraordinary visual stories
+            </p>
+        </div>
+    </section>
+    
+    <!-- About Content -->
+    <section class="section-padding bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="scroll-reveal text-center lg:text-left">
+                    <img src="resources/profile.jpg" alt="Professional Image Editor" class="profile-image mx-auto lg:mx-0">
+                </div>
+                
+                <div class="scroll-reveal">
+                    <h2 class="text-4xl font-bold mb-6">Hello, I'm Alex Chen</h2>
+                    <p class="text-lg text-gray-600 mb-6">
+                        With over 8 years of experience in professional image editing, I've dedicated my career to the art of visual storytelling. What started as a fascination with the magic of Photoshop has evolved into a deep expertise in transforming raw captures into compelling narratives.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-6">
+                        I believe every image has a story waiting to be told, and my role is to help that story shine through careful attention to detail, technical precision, and artistic vision. Whether it's enhancing the natural beauty of a portrait, creating dramatic impact in a landscape, or achieving commercial perfection in product photography, I approach each project with the same commitment to excellence.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-8">
+                        My work has been featured in various publications and has helped countless photographers and businesses elevate their visual presence. I'm passionate about collaborating with clients to understand their vision and bring it to life through expert editing techniques.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-600 mb-2">500+</div>
+                            <div class="text-gray-600">Projects Completed</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-600 mb-2">50+</div>
+                            <div class="text-gray-600">Happy Clients</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-600 mb-2">8+</div>
+                            <div class="text-gray-600">Years Experience</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-600 mb-2">24/7</div>
+                            <div class="text-gray-600">Support Available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Career Timeline -->
+    <section class="section-padding bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">My Journey</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    From curious beginner to professional expert - my path in visual storytelling
+                </p>
+            </div>
+            
+            <div class="relative">
+                <div class="timeline-line"></div>
+                
+                <div class="space-y-12">
+                    <div class="timeline-item relative grid md:grid-cols-2 gap-8 items-center">
+                        <div class="timeline-dot"></div>
+                        <div class="md:text-right">
+                            <h3 class="text-2xl font-bold mb-2">2016 - The Beginning</h3>
+                            <p class="text-gray-600">Started learning Photoshop and Lightroom as a hobby. Discovered a passion for enhancing photos and bringing out their hidden potential.</p>
+                        </div>
+                        <div></div>
+                    </div>
+                    
+                    <div class="timeline-item relative grid md:grid-cols-2 gap-8 items-center">
+                        <div class="timeline-dot"></div>
+                        <div></div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">2018 - First Clients</h3>
+                            <p class="text-gray-600">Began working with local photographers on portrait and wedding projects. Developed a reputation for natural-looking retouching and attention to detail.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item relative grid md:grid-cols-2 gap-8 items-center">
+                        <div class="timeline-dot"></div>
+                        <div class="md:text-right">
+                            <h3 class="text-2xl font-bold mb-2">2020 - Professional Growth</h3>
+                            <p class="text-gray-600">Expanded into commercial work with product and architectural photography. Invested in advanced training and professional equipment.</p>
+                        </div>
+                        <div></div>
+                    </div>
+                    
+                    <div class="timeline-item relative grid md:grid-cols-2 gap-8 items-center">
+                        <div class="timeline-dot"></div>
+                        <div></div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-2">2022 - Creative Excellence</h3>
+                            <p class="text-gray-600">Started specializing in creative compositing and artistic editing. Work featured in several photography publications and exhibitions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item relative grid md:grid-cols-2 gap-8 items-center">
+                        <div class="timeline-dot"></div>
+                        <div class="md:text-right">
+                            <h3 class="text-2xl font-bold mb-2">2024 - Present Day</h3>
+                            <p class="text-gray-600">Established professional studio with international clients. Continuing to push creative boundaries while maintaining the highest quality standards.</p>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technical Skills -->
+    <section class="section-padding bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Technical Expertise</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Mastering industry-standard tools and advanced techniques
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="scroll-reveal">
+                    <div id="skillsChart" style="width: 100%; height: 400px;"></div>
+                </div>
+                
+                <div class="space-y-8">
+                    <div class="scroll-reveal">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-lg font-semibold">Adobe Photoshop</span>
+                            <span class="text-amber-600 font-bold">Expert</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div class="skill-progress bg-amber-500 h-4 rounded-full" data-width="95%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Advanced retouching, compositing, and creative effects</p>
+                    </div>
+                    
+                    <div class="scroll-reveal">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-lg font-semibold">Adobe Lightroom</span>
+                            <span class="text-amber-600 font-bold">Expert</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div class="skill-progress bg-amber-500 h-4 rounded-full" data-width="92%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">RAW processing, color grading, and batch editing</p>
+                    </div>
+                    
+                    <div class="scroll-reveal">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-lg font-semibold">Capture One</span>
+                            <span class="text-amber-600 font-bold">Advanced</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div class="skill-progress bg-amber-500 h-4 rounded-full" data-width="88%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Professional RAW processing and tethered shooting</p>
+                    </div>
+                    
+                    <div class="scroll-reveal">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-lg font-semibold">DaVinci Resolve</span>
+                            <span class="text-amber-600 font-bold">Advanced</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div class="skill-progress bg-amber-500 h-4 rounded-full" data-width="85%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Color grading and video editing for motion projects</p>
+                    </div>
+                    
+                    <div class="scroll-reveal">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-lg font-semibold">3D Compositing</span>
+                            <span class="text-amber-600 font-bold">Intermediate</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div class="skill-progress bg-amber-500 h-4 rounded-full" data-width="78%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Basic 3D integration and advanced compositing techniques</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Software Proficiency -->
+    <section class="section-padding bg-gray-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Software Proficiency</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Working with industry-standard tools to deliver exceptional results
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="software-card bg-white rounded-lg p-6 text-center scroll-reveal">
+                    <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-xl">Ps</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Photoshop</h3>
+                    <div class="text-amber-600 font-bold">Expert</div>
+                </div>
+                
+                <div class="software-card bg-white rounded-lg p-6 text-center scroll-reveal">
+                    <div class="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-xl">Lr</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Lightroom</h3>
+                    <div class="text-amber-600 font-bold">Expert</div>
+                </div>
+                
+                <div class="software-card bg-white rounded-lg p-6 text-center scroll-reveal">
+                    <div class="w-16 h-16 bg-orange-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-xl">C1</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">Capture One</h3>
+                    <div class="text-amber-600 font-bold">Advanced</div>
+                </div>
+                
+                <div class="software-card bg-white rounded-lg p-6 text-center scroll-reveal">
+                    <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white font-bold text-xl">Dv</span>
+                    </div>
+                    <h3 class="font-semibold mb-2">DaVinci Resolve</h3>
+                    <div class="text-amber-600 font-bold">Advanced</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Philosophy -->
+    <section class="section-padding bg-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="scroll-reveal">
+                <h2 class="text-4xl md:text-5xl font-bold mb-8">My Philosophy</h2>
+                <blockquote class="text-2xl md:text-3xl text-gray-700 italic mb-8 leading-relaxed">
+                    "Every image has a story to tell. My role is to help that story shine through with technical precision and artistic vision, creating visual experiences that resonate and inspire."
+                </blockquote>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    I believe in the power of subtle enhancement over heavy manipulation, preserving the natural essence of each image while elevating its emotional impact. My approach combines technical mastery with artistic sensitivity to create results that are both beautiful and authentic.
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Call to Action -->
+    <section class="section-padding bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="scroll-reveal">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">Let's Create Something Amazing Together</h2>
+                <p class="text-xl mb-8 opacity-90">
+                    Ready to transform your images into visual masterpieces? I'd love to hear about your project and discuss how we can bring your vision to life.
+                </p>
+                <a href="contact.html" class="inline-block bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 rounded-lg font-semibold transition-all transform hover:scale-105">
+                    Start Your Project
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-gray-400">&copy; 2024 Professional Image Editor. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        // About page functionality
+        class AboutPage {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.setupScrollAnimations();
+                this.setupSkillsChart();
+                this.setupSkillBars();
+                this.setupMobileMenu();
+            }
+            
+            setupScrollAnimations() {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('revealed');
+                            
+                            // Animate timeline items
+                            if (entry.target.classList.contains('timeline-item')) {
+                                setTimeout(() => {
+                                    entry.target.classList.add('visible');
+                                }, 200);
+                            }
+                        }
+                    });
+                }, observerOptions);
+                
+                document.querySelectorAll('.scroll-reveal, .timeline-item').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+            
+            setupSkillsChart() {
+                const chartDom = document.getElementById('skillsChart');
+                const myChart = echarts.init(chartDom);
+                
+                const option = {
+                    title: {
+                        text: 'Technical Skills Overview',
+                        left: 'center',
+                        textStyle: {
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    radar: {
+                        indicator: [
+                            { name: 'Photoshop', max: 100 },
+                            { name: 'Lightroom', max: 100 },
+                            { name: 'Color Grading', max: 100 },
+                            { name: 'Retouching', max: 100 },
+                            { name: 'Compositing', max: 100 },
+                            { name: 'RAW Processing', max: 100 }
+                        ],
+                        radius: '60%',
+                        axisName: {
+                            color: '#666',
+                            fontSize: 12
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#e0e0e0'
+                            }
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'Skills',
+                        type: 'radar',
+                        data: [{
+                            value: [95, 92, 88, 96, 78, 94],
+                            name: 'Skill Level',
+                            areaStyle: {
+                                color: 'rgba(212, 165, 116, 0.3)'
+                            },
+                            lineStyle: {
+                                color: '#d4a574',
+                                width: 3
+                            },
+                            itemStyle: {
+                                color: '#d4a574'
+                            }
+                        }]
+                    }]
+                };
+                
+                myChart.setOption(option);
+                
+                window.addEventListener('resize', () => {
+                    myChart.resize();
+                });
+            }
+            
+            setupSkillBars() {
+                const skillObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const skillBar = entry.target;
+                            const width = skillBar.dataset.width;
+                            setTimeout(() => {
+                                skillBar.style.width = width;
+                            }, 500);
+                            skillObserver.unobserve(skillBar);
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.skill-progress').forEach(bar => {
+                    skillObserver.observe(bar);
+                });
+            }
+            
+            setupMobileMenu() {
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const nav = document.querySelector('nav');
+                
+                if (mobileMenuBtn) {
+                    mobileMenuBtn.addEventListener('click', () => {
+                        let mobileMenu = document.getElementById('mobileMenu');
+                        if (!mobileMenu) {
+                            mobileMenu = document.createElement('div');
+                            mobileMenu.id = 'mobileMenu';
+                            mobileMenu.className = 'md:hidden bg-white border-t';
+                            mobileMenu.innerHTML = `
+                                <div class="px-6 py-4 space-y-4">
+                                    <a href="index.html" class="block text-gray-700 hover:text-amber-600 transition-colors">Home</a>
+                                    <a href="portfolio.html" class="block text-gray-700 hover:text-amber-600 transition-colors">Portfolio</a>
+                                    <a href="about.html" class="block text-amber-600 font-semibold">About</a>
+                                    <a href="contact.html" class="block text-gray-700 hover:text-amber-600 transition-colors">Contact</a>
+                                </div>
+                            `;
+                            nav.appendChild(mobileMenu);
+                        }
+                        
+                        mobileMenu.classList.toggle('hidden');
+                    });
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new AboutPage();
+        });
+    </script>
+</body>
+</html>
